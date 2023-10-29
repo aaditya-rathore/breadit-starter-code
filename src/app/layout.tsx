@@ -22,8 +22,8 @@ export default function RootLayout({
     className={cn('bg-white text-slate-900 antialiased light',
     inter.className)}>
       <body className='min-h-screen pt-12 bg-slate-50 antialiased'>
-        <Navbar />
-      <div className='container mx-auto-w-7xl mx-auto h-full pt-12'>
+        <Navbar/>
+        <div className='container mx-auto-w-7xl mx-auto h-full pt-12'>
         {children}
         </div>
         <Toaster />

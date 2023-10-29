@@ -1,5 +1,6 @@
+import Link from 'next/link'
 import { Icons } from './Icons'
-import { Link } from 'lucide-react'
+
 import UserAuthForm from './UserAuthForm'
 
 
@@ -20,7 +21,7 @@ const SignIn = () => {
         <UserAuthForm/>
         <p className='px-8 text-center text-sm text-muted-foreground'>
             New to Breadit?{' '}
-            <Link
+            <Link 
                 href='/sign-up'
                 className='hover:text-brand text-sm underline underline-offset-4'>
                 Sign Up

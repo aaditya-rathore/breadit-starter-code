@@ -1,4 +1,5 @@
 import Navbar from '@/components/Navbar'
+import Providers from '@/components/Providers'
 import { Toaster } from '@/components/ui/toaster'
 import { cn } from '@/lib/utils'
 import '@/styles/globals.css'
@@ -24,6 +25,7 @@ export default function RootLayout({
     className={cn('bg-white text-slate-900 antialiased light',
     inter.className)}>
       <body className='min-h-screen pt-12 bg-slate-50 antialiased'>
+        <Providers>
         {/* @ts-expect-error Server Component */}
         <Navbar/>
         
@@ -32,7 +34,8 @@ export default function RootLayout({
         <div className='container mx-auto-w-7xl mx-auto h-full pt-12'>
         {children}
         </div>
-        <Toaster />
+        </Providers>
+        {/*<Toaster />*/}
       </body>
     </html>
   )

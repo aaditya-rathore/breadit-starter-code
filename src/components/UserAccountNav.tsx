@@ -1,9 +1,11 @@
 'use client'
 import { User } from 'next-auth'
-import { DropdownMenu, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from './ui/DropdownMenu'
+import { DropdownMenu, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger,DropdownMenuContent } from './ui/DropdownMenu'
 import { FC } from 'react'
 import UserAvatar from './UserAvatar'
-import { DropdownMenuContent } from '@radix-ui/react-dropdown-menu'
+
+import Link from 'next/link'
+import { signOut } from 'next-auth/react'
 
 interface UserAccountNavProps {
   user:Pick<User,'name' | 'image' | 'email'>
@@ -31,7 +33,27 @@ const UserAccountNav: FC<UserAccountNavProps> = ({user}) => {
       </div>
       <DropdownMenuSeparator />
 
-      <DropdownMenuItem></DropdownMenuItem>
+      <DropdownMenuItem asChild>
+        <Link href='/'>Feed</Link>
+      </DropdownMenuItem>
+
+      <DropdownMenuItem asChild>
+        <Link href='/r/create'>Create community</Link>
+      </DropdownMenuItem>
+
+      <DropdownMenuItem asChild>
+        <Link href='/r/settings'>Settings</Link>
+      </DropdownMenuItem>
+
+      <DropdownMenuSeparator />
+      <DropdownMenuItem onSelect={(event) => { 
+        event.preventDefault()
+        signOut({
+          callbackUrl: `${window.location.origin}/sign-in`,
+        })
+      }}  className='cursor-pointer' >
+        Sign out
+      </DropdownMenuItem>
 
     </DropdownMenuContent>
   </DropdownMenu>

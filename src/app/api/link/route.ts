@@ -29,8 +29,8 @@ export async function GET(req: Request){
                 description,
                 image:{
                     url:imageUrl
-                }
-            }
+                },
+            },
         })
     )
 }

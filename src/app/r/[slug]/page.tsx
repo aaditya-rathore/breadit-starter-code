@@ -1,4 +1,5 @@
 import MiniCreatePost from '@/components/MiniCreatePost'
+import PostFeed from '@/components/PostFeed'
 import { INFINITE_SCROLLING_PAGINATION_RESULTS } from '@/config'
 import { getAuthSession } from '@/lib/auth'
 import { db } from '@/lib/db'
@@ -15,7 +16,7 @@ const page = async({params}:pageProps) => {
 
     const session =await getAuthSession()
 
-    const subreddit =await db.subreddit.findUnique({
+    const subreddit =await db.subreddit.findFirst({
         where: {name: slug},
         include : {
             posts :{
@@ -25,8 +26,10 @@ const page = async({params}:pageProps) => {
                     comments : true,
                     subreddit : true,
                 },
-
-                take:INFINITE_SCROLLING_PAGINATION_RESULTS
+                orderBy: {
+                  createdAt: 'desc'
+                },
+                take:INFINITE_SCROLLING_PAGINATION_RESULTS,
             },
         },
     })
@@ -39,7 +42,7 @@ const page = async({params}:pageProps) => {
             r/{subreddit.name}
         </h1>
         <MiniCreatePost session={session}/>
-        {/* TODO: show posts in user feed */}
+        <PostFeed initialPosts={subreddit.posts} subredditName={subreddit.name} />
     </>
   )
 }

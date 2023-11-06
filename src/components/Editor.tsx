@@ -11,6 +11,7 @@ import { toast } from '@/hooks/use-toast'
 import { useMutation } from '@tanstack/react-query'
 import axios from 'axios'
 import { usePathname, useRouter } from 'next/navigation'
+import {z} from 'zod'
 
 interface EditorProps {
   subredditId: string
@@ -101,6 +102,7 @@ const Editor: FC<EditorProps> = ({subredditId}) => {
     useEffect(() => {
         if(Object.keys(errors).length) {
             for(const [_key, value] of Object.entries(errors)) {
+                value
                 toast({
                     title: 'Something went wrong',
                     description: (value as {message: string}).message,

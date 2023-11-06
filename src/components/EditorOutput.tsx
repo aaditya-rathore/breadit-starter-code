@@ -25,7 +25,8 @@ const renderers = {
 }
 
 const EditorOutput: FC<EditorOutputProps> = ({content}) => {
-  return( <Output style={style} data={content} className='text-sm' renderers={renderers}/>
+  return( 
+  <Output data={content}  style={style} className='text-sm' renderers={renderers}/>
 )}
 
 function CustomCodeRenderer({data}: any) {

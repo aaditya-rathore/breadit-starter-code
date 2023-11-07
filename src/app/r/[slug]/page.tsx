@@ -27,7 +27,7 @@ const page = async({params}:pageProps) => {
                     subreddit : true,
                 },
                 orderBy: {
-                  createdAt: 'desc'
+                  createdAt: 'desc',
                 },
                 take:INFINITE_SCROLLING_PAGINATION_RESULTS,
             },

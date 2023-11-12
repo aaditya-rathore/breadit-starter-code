@@ -4,6 +4,7 @@ import { buttonVariants } from "./ui/Button"
 import { getServerSession } from "next-auth"
 import UserAccountNav from "./UserAccountNav"
 import { getAuthSession } from "@/lib/auth"
+import SearchBar from "./SearchBar"
 
 const Navbar=async()=>{
     const session = await getAuthSession()
@@ -18,6 +19,8 @@ const Navbar=async()=>{
                 <p className="hidden text-zinc-700 text-sm font-medium md:block">Breadit</p>
             </Link>
             {/* Serch bar */}
+            <SearchBar />
+            
             {session?.user? (
                 //<p>you are logged in</p>
                 <UserAccountNav user = {session.user} />

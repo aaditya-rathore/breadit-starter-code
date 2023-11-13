@@ -20,7 +20,7 @@ export async function POST(req: Request) {
             where: {
                 subredditId,
                 userId: session.user.id
-            }
+            },
         })
 
         if (!subscriptionExits) {

@@ -83,7 +83,7 @@ initialVote,
         <Button 
         onClick={() => vote('UP')} 
         size='sm' 
-        varient='ghost' 
+        variant='ghost' 
         arial-label='upvote'>
             <ArrowBigUp
              className={cn('h-5 w-5 text-zinc-700',{
@@ -98,7 +98,7 @@ initialVote,
         <Button
          onClick={() => vote('DOWN')} 
          size='sm' 
-         varient='ghost' 
+         variant='ghost' 
          arial-label='downvote'>
          
             <ArrowBigDown className={cn('h-5 w-5 text-zinc-700',{

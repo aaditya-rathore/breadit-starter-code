@@ -13,7 +13,6 @@ type PartialVote =Pick<Vote,'type'>
 interface PostProps {
   subredditName: string
   post: Post & {
-    author: User
     votes: Vote[]
   }
   commentAmt: number
@@ -29,7 +28,7 @@ const Post: FC<PostProps> = ({
      currentVote,
   }) => {
 
-  const pRef = useRef<HTMLParagraphElement>(null)
+  const pRef = useRef<HTMLDivElement>(null)
 
   return( 
   <div className='rounded-md bg-white shadow'>
@@ -51,7 +50,7 @@ const Post: FC<PostProps> = ({
                 <span className='px-1'>•</span>
             </>
           ): null}
-          <span>Posted by u/{post.author.username}</span>{'  '}
+          {/* <span>Posted by u/{post.author.name}</span>{'  '} */}
           { formatTimeToNow( new Date( post.createdAt))}
         </div>
 

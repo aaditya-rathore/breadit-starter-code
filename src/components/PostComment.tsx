@@ -88,7 +88,7 @@ const PostComment: FC<PostCommentProps> = ({comment, votesAmt, currentVote, post
         <CommentVotes commentId={comment.id} initialVotesAmt={votesAmt} initialVote={currentVote} />
 
 
-      <Button onclick={() => {
+      <Button onClick={() => {
         if(!session) return router.push('/sign-in')
         setIsReplying(true)
 

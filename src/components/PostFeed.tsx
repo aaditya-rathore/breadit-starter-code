@@ -48,9 +48,31 @@ const PostFeed: FC<PostFeedProps> = ({initialPosts,subredditName}) => {
     
     const posts = data?.pages.flatMap((page) => page) ?? initialPosts
 
+   
+    
+
     return (
         <ul className='flex flex-col col-span-2 space-y-6'>
           {posts.map((post, index) => {
+            post = {
+              id: 'clqens0vb0003vhro6foddbv3',
+              title: 'this is my',
+              content: null,
+              createdAt:new Date,
+              updatedAt: new Date,
+              authorId: 'cloblbg0k0000vhd08ore7v1x',
+              subredditId: 'clqeicy1e0001vh9wyjcizca6',
+              votes: [],
+              comments: [],
+              subreddit: {
+                id: 'clqeicy1e0001vh9wyjcizca6',
+                name: 'Rock',
+                createdAt: new Date,
+                updatedAt:new Date,
+                creatorId: 'cloblbg0k0000vhd08ore7v1x'
+              }
+            }
+
             const votesAmt = post.votes.reduce((acc, vote) => {
               if (vote.type === 'UP') return acc + 1
               if (vote.type === 'DOWN') return acc - 1
@@ -79,7 +101,7 @@ const PostFeed: FC<PostFeedProps> = ({initialPosts,subredditName}) => {
             currentVote={currentVote} 
             commentAmt={post.comments.length}
             votesAmt={votesAmt} 
-            post={post} 
+            post={post}
             subredditName={post.subreddit.name}/>
           )}
     })}

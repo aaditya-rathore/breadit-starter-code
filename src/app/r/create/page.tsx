@@ -10,7 +10,7 @@ import { CreateSubredditPayload } from "@/lib/validators/subreddit";
 import { toast } from "@/hooks/use-toast";
 import { useCustomToast } from "@/hooks/use-custom-toast";
 
-const page:FC =() =>{
+const Page:FC =() =>{
     const [input,setInput] = useState<string>("")
     const router = useRouter()
     const {loginToast} =useCustomToast()
@@ -97,4 +97,4 @@ const page:FC =() =>{
     )
 }
 
-export default page
+export default Page

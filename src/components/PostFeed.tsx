@@ -53,25 +53,8 @@ const PostFeed: FC<PostFeedProps> = ({initialPosts,subredditName}) => {
 
     return (
         <ul className='flex flex-col col-span-2 space-y-6'>
-          {posts.map((post, index) => {
-            post = {
-              id: 'clqens0vb0003vhro6foddbv3',
-              title: 'this is my',
-              content: null,
-              createdAt:new Date,
-              updatedAt: new Date,
-              authorId: 'cloblbg0k0000vhd08ore7v1x',
-              subredditId: 'clqeicy1e0001vh9wyjcizca6',
-              votes: [],
-              comments: [],
-              subreddit: {
-                id: 'clqeicy1e0001vh9wyjcizca6',
-                name: 'Rock',
-                createdAt: new Date,
-                updatedAt:new Date,
-                creatorId: 'cloblbg0k0000vhd08ore7v1x'
-              }
-            }
+          {posts?.map((post, index) => {
+            
 
             const votesAmt = post.votes.reduce((acc, vote) => {
               if (vote.type === 'UP') return acc + 1

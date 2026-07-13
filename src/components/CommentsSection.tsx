@@ -1,6 +1,5 @@
 import { getAuthSession } from '@/lib/auth'
 import { db } from '@/lib/db'
-import { FC } from 'react'
 import PostComment from './PostComment'
 import CreateComment from './CreateComment'
 
@@ -28,12 +27,12 @@ const CommentsSection  = async({postId}: CommentsSectionProps) => {
             }
         }
     })
-  return( <div className='flex flex-col gap-y-4 mt-4'>
+  return( <section className='mt-8 flex w-full min-w-0 flex-col gap-y-4'>
     <hr className='w-full h-px my-6'/>
 
     <CreateComment postId={postId}/>
 
-    <div className='flex flex-col gap-y-6 mt-4'>
+    <div className='flex w-full min-w-0 flex-col gap-y-6 mt-4'>
        {comments.filter((comment)=> !comment.replyToId).map((topLevelComment)=>{
            const topLevelCommentVotesAmt = topLevelComment.votes.reduce((acc, vote) => {
                if(vote.type === 'UP') return acc + 1
@@ -71,7 +70,7 @@ const CommentsSection  = async({postId}: CommentsSectionProps) => {
 
                     return<div 
                     key={reply.id} 
-                    className='ml-2 py-2 pl-4 border-1-2 border-zinc-200'>
+                    className='ml-2 border-l-2 border-zinc-200 py-2 pl-4'>
                         <PostComment
                          comment={reply}
                           currentVote={replyVotes} votesAmt={replyVotesAmt} 
@@ -84,7 +83,7 @@ const CommentsSection  = async({postId}: CommentsSectionProps) => {
            )
        })} 
     </div>
-  </div>
+  </section>
   )
 }
 

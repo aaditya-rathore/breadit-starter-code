@@ -14,8 +14,11 @@ import { Textarea } from './ui/Textarea'
 import { useMutation } from '@tanstack/react-query'
 import { CommentRequest } from '@/lib/validators/comment'
 import axios from 'axios'
-import { Toast } from './ui/Toast'
 import { toast } from '@/hooks/use-toast'
+
+import { UploadButton } from '@/lib/uploadthing'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 
 type ExtendedComment = Comment & {
     votes: CommentVote[]
@@ -63,7 +66,7 @@ const PostComment: FC<PostCommentProps> = ({comment, votesAmt, currentVote, post
     })
 
   return( 
-  <div ref={commentRef} className='flex flex-col'>
+  <div ref={commentRef} className='flex flex-col w-full'>
     <div className='flex items-center'>
         <UserAvatar user={{            
                 name: comment.author.name || null, 
@@ -82,7 +85,9 @@ const PostComment: FC<PostCommentProps> = ({comment, votesAmt, currentVote, post
         </div>
     </div>
 
-    <p className='text-sm text-zinc-900 mt-2'>{comment.text}</p>
+    <div className='text-sm text-zinc-900 mt-2 prose prose-sm max-w-none'>
+        <ReactMarkdown remarkPlugins={[remarkGfm]}>{comment.text}</ReactMarkdown>
+    </div>
 
     <div className='flex gap-2 items-center flex-wrap'>
         <CommentVotes commentId={comment.id} initialVotesAmt={votesAmt} initialVote={currentVote} />
@@ -98,9 +103,6 @@ const PostComment: FC<PostCommentProps> = ({comment, votesAmt, currentVote, post
 
         {isReplying ? (
             <div className='grid w-full gap-1.5'>
-                <Label>Your Comment</Label>
-                
-            <div className='grid w-full gap-1.5'>
                 <Label htmlFor='comment'>Your Comment</Label>
                 <div className='mt-2'>
                 <Textarea id='comment'
@@ -110,22 +112,40 @@ const PostComment: FC<PostCommentProps> = ({comment, votesAmt, currentVote, post
                 placeholder='What are your thoughts?'
         />
 
-        <div className='mt-2 flex justify-end gap-2'>
+        <div className='mt-2 flex justify-between items-center w-full'>
+          <div className='w-fit'>
+            <UploadButton
+              endpoint="imageUploader"
+              onClientUploadComplete={(res) => {
+                if (res && res.length > 0) {
+                  setInput(prev => prev + (prev.length > 0 ? `\n![image](${res[0].url})` : `![image](${res[0].url})`))
+                }
+              }}
+              onUploadError={(error: Error) => {
+                toast({
+                  title: 'Upload failed',
+                  description: error.message,
+                  variant: 'destructive',
+                })
+              }}
+            />
+          </div>
+          <div className='flex gap-2'>
             <Button tabIndex={-1} variant='subtle' onClick={() => setIsReplying(false)}>Cancel</Button>
-          <Button 
-          isLoading={isLoading} disabled={input.length === 0} onClick={()=> {
-            if(!input) return
-            PostComment({
-                postId,
-                text: input,
-                replyToId: comment.replyToId ?? comment.id,
-            })
-          }}>
-            Post</Button>
+            <Button 
+            isLoading={isLoading} disabled={input.length === 0} onClick={()=> {
+              if(!input) return
+              PostComment({
+                  postId,
+                  text: input,
+                  replyToId: comment.replyToId ?? comment.id,
+              })
+            }}>
+              Post</Button>
+          </div>
+        </div>
         </div>
       </div>
-    </div>
-            </div>
         ): null}
     </div>
   </div>

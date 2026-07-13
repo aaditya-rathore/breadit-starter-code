@@ -11,6 +11,8 @@ import { useCustomToast } from '@/hooks/use-custom-toast'
 import { toast } from '@/hooks/use-toast'
 import { useRouter } from 'next/navigation'
 
+import { UploadButton } from '@/lib/uploadthing'
+
 interface CreateCommentProps {
   postId: string
   replyToId?: string
@@ -63,7 +65,24 @@ const CreateComment: FC<CreateCommentProps> = ({postId, replyToId}) => {
           placeholder='What are your thoughts?'
         />
 
-        <div className='mt-2 flex justify-end'>
+        <div className='mt-2 flex justify-between items-center'>
+          <div className='w-fit'>
+            <UploadButton
+              endpoint="imageUploader"
+              onClientUploadComplete={(res) => {
+                if (res && res.length > 0) {
+                  setInput(prev => prev + (prev.length > 0 ? `\n![image](${res[0].url})` : `![image](${res[0].url})`))
+                }
+              }}
+              onUploadError={(error: Error) => {
+                toast({
+                  title: 'Upload failed',
+                  description: error.message,
+                  variant: 'destructive',
+                })
+              }}
+            />
+          </div>
           <Button 
           isLoading={isLoading} disabled={input.length === 0} onClick={()=>comment({postId, text: input, replyToId})}>
             Post</Button>

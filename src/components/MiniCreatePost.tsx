@@ -15,6 +15,7 @@ interface MiniCreatePostProps {
 const MiniCreatePost: FC<MiniCreatePostProps> = ({session}) => {
     const router = useRouter()
     const pathname = usePathname()
+    const submitPath = pathname.endsWith('/submit') ? pathname : `${pathname}/submit`
 
   return (
   <li className='overflow-hidden rounded-md bg-white shadow'>
@@ -29,19 +30,19 @@ const MiniCreatePost: FC<MiniCreatePostProps> = ({session}) => {
         </div>
         <Input
          readOnly
-          onClick={() => router.push(pathname + '/submit')}
+          onClick={() => router.push(submitPath)}
            placeholder='Create post'
         />
 
         <Button
-            onClick={() => router.push(pathname + '/submit')}
+            onClick={() => router.push(submitPath)}
             variant='ghost'
         >
             <ImageIcon className='text-zinc-600'/>
         </Button>
 
         <Button
-            onClick={() => router.push(pathname + '/submit')}
+            onClick={() => router.push(submitPath)}
             variant='ghost'
         >
             <Link2 className='text-zinc-600'/>

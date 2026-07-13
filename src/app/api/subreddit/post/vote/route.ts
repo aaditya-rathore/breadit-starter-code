@@ -56,7 +56,7 @@ export async function PATCH(req: Request) {
                     return acc
                   }, 0)
           
-                  if (votesAmt >= CACHE_AFTER_UPVOTES) {
+                  if (votesAmt >= CACHE_AFTER_UPVOTES && redis) {
                     const cachePayload: CachedPost = {
                       authorUsername: post.author.username ?? '',
                       content: JSON.stringify(post.content),
@@ -93,7 +93,7 @@ export async function PATCH(req: Request) {
                 return acc
             },0)   
 
-            if(votesAmt >= CACHE_AFTER_UPVOTES){
+            if(votesAmt >= CACHE_AFTER_UPVOTES && redis){
                 const cachePayload: CachedPost = {
                     authorUsername: post.author.username ?? ' ',
                     content: JSON.stringify(post.content),
@@ -126,7 +126,7 @@ export async function PATCH(req: Request) {
             return acc
         },0)   
 
-        if(votesAmt >= CACHE_AFTER_UPVOTES){
+        if(votesAmt >= CACHE_AFTER_UPVOTES && redis){
             const cachePayload: CachedPost = {
                 authorUsername: post.author.username ?? ' ',
                 content: JSON.stringify(post.content),

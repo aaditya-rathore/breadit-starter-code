@@ -12,12 +12,14 @@ import { useMutation } from '@tanstack/react-query'
 import axios from 'axios'
 import { usePathname, useRouter } from 'next/navigation'
 import {z} from 'zod'
+import { Post } from '@prisma/client'
 
 interface EditorProps {
   subredditId: string
+  post?: Pick<Post, 'id' | 'title' | 'content'>
 }
 
-const Editor: FC<EditorProps> = ({subredditId}) => {
+const Editor: FC<EditorProps> = ({subredditId, post}) => {
 
     const {
         register,
@@ -27,8 +29,8 @@ const Editor: FC<EditorProps> = ({subredditId}) => {
         resolver: zodResolver(PostValidator),
         defaultValues: {
             subredditId,
-            title: '',
-            content: null,
+            title: post?.title ?? '',
+            content: post?.content ?? null,
         },
     })
 
@@ -57,7 +59,7 @@ const Editor: FC<EditorProps> = ({subredditId}) => {
                 },
                 placeholder: 'Type here to write your Post...',
                 inlineToolbar: true,
-                data: { blocks: [] },
+                data: post?.content ? (typeof post.content === 'string' ? JSON.parse(post.content) : post.content) : { blocks: [] },
                 tools: {
                     header: Header,
                     linkTool:{
@@ -71,12 +73,12 @@ const Editor: FC<EditorProps> = ({subredditId}) => {
                         config: {
                             uploader: {
                                 async uploadByFile(file: File){
-                                    const [res] =await uploadFiles([file],'imageUploader')
+                                    const [res] = await uploadFiles("imageUploader", { files: [file] })
 
                                     return {
                                         success: 1,
                                         file: {
-                                            url: res.fileUrl,
+                                            url: res.url,
                                         },
                                     }
                                 },
@@ -131,36 +133,44 @@ const Editor: FC<EditorProps> = ({subredditId}) => {
         }
     }, [isMounted, initializeEditor])
 
-    const {mutate:createPost} =useMutation({
+    const {mutate:savePost} =useMutation({
         mutationFn: async({
             title,
             content,
             subredditId,
         }: PostCreationRequest) => {
-            const payload : PostCreationRequest = {
-                title,
-                content,
-                subredditId,
+            if (post) {
+                const payload = { title, content, postId: post.id }
+                const {data} = await axios.patch('/api/subreddit/post/edit', payload)
+                return data
+            } else {
+                const payload : PostCreationRequest = {
+                    title,
+                    content,
+                    subredditId,
+                }
+                const {data} =await axios.post('/api/subreddit/post/create',payload)
+                return data
             }
-            const {data} =await axios.post('/api/subreddit/post/create',payload)
-            return data
         },
         onError: () => {
             return toast({
                 title: 'Something went wrong',
-                description: 'Your post could not be created, please try again later.',
+                description: 'Your post could not be saved, please try again later.',
                 variant: 'destructive',
             })
         },
         onSuccess: () => {
-            // r/mycommunity/submit into r/mycommunity
-            const newPathname =pathname.split('/').slice(0,-1).join('/')
-            router.push(newPathname)
-
+            if (post) {
+                router.push(`/r/${pathname.split('/')[2]}/post/${post.id}`)
+            } else {
+                const newPathname =pathname.split('/').slice(0,-1).join('/')
+                router.push(newPathname)
+            }
             router.refresh()
 
             return toast({
-                description: 'Your post has been Published.',
+                description: post ? 'Your post has been updated.' : 'Your post has been Published.',
             })
         },
     })
@@ -174,7 +184,7 @@ const Editor: FC<EditorProps> = ({subredditId}) => {
             subredditId,
         }
 
-        createPost(payload)
+        savePost(payload)
     }
 
     if (!isMounted) {

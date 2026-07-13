@@ -6,15 +6,21 @@ import { Comment, CommentVote, User } from '@prisma/client'
 import { formatTimeToNow } from '@/lib/utils'
 import CommentVotes from "@/components/CommentVotes"
 import { Button } from './ui/Button'
-import { MessageSquare } from 'lucide-react'
+import { MessageSquare, MoreHorizontal, Edit, Trash } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import { Label } from './ui/Label'
 import { Textarea } from './ui/Textarea'
 import { useMutation } from '@tanstack/react-query'
-import { CommentRequest } from '@/lib/validators/comment'
+import { CommentRequest, CommentEditRequest, CommentDeleteRequest } from '@/lib/validators/comment'
 import axios from 'axios'
 import { toast } from '@/hooks/use-toast'
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from '@/components/ui/DropdownMenu'
 
 import { UploadButton } from '@/lib/uploadthing'
 import ReactMarkdown from 'react-markdown'
@@ -65,9 +71,50 @@ const PostComment: FC<PostCommentProps> = ({comment, votesAmt, currentVote, post
         }
     })
 
+    const [isEditing, setIsEditing] = useState<boolean>(false)
+    const [editInput, setEditInput] = useState<string>(comment.text)
+
+    const { mutate: editComment, isLoading: isEditLoading } = useMutation({
+        mutationFn: async ({ commentId, text }: CommentEditRequest) => {
+            const payload: CommentEditRequest = { commentId, text }
+            const { data } = await axios.patch(`/api/subreddit/post/comment/edit`, payload)
+            return data
+        },
+        onError: () => {
+            return toast({
+                title: 'Something went wrong.',
+                description: 'Your comment was not edited successfully. Please try again.',
+                variant: 'destructive',
+            })
+        },
+        onSuccess: () => {
+            router.refresh()
+            setIsEditing(false)
+        }
+    })
+
+    const { mutate: deleteComment, isLoading: isDeleteLoading } = useMutation({
+        mutationFn: async ({ commentId }: CommentDeleteRequest) => {
+            const payload: CommentDeleteRequest = { commentId }
+            const { data } = await axios.delete(`/api/subreddit/post/comment/delete`, { data: payload })
+            return data
+        },
+        onError: () => {
+            return toast({
+                title: 'Something went wrong.',
+                description: 'Your comment was not deleted successfully. Please try again.',
+                variant: 'destructive',
+            })
+        },
+        onSuccess: () => {
+            router.refresh()
+        }
+    })
+
   return( 
   <div ref={commentRef} className='flex flex-col w-full'>
-    <div className='flex items-center'>
+    <div className='flex items-center justify-between'>
+      <div className='flex items-center'>
         <UserAvatar user={{            
                 name: comment.author.name || null, 
                 image: comment.author.image || null        
@@ -83,20 +130,64 @@ const PostComment: FC<PostCommentProps> = ({comment, votesAmt, currentVote, post
                 {formatTimeToNow(new Date(comment.createdAt))}
             </p>
         </div>
+      </div>
+      
+      {session?.user.id === comment.authorId && (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant='ghost' size='sm' className='h-8 w-8 p-0'>
+              <span className='sr-only'>Open menu</span>
+              <MoreHorizontal className='h-4 w-4' />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align='end'>
+            <DropdownMenuItem onClick={() => setIsEditing(true)}>
+              <Edit className='mr-2 h-4 w-4' /> Edit
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => deleteComment({ commentId: comment.id })} disabled={isDeleteLoading}>
+              <Trash className='mr-2 h-4 w-4 text-red-600' /> <span className='text-red-600'>Delete</span>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      )}
     </div>
 
-    <div className='text-sm text-zinc-900 mt-2 prose prose-sm max-w-none'>
-        <ReactMarkdown 
-          remarkPlugins={[remarkGfm]}
-          components={{
-            a: ({node: _node, ...props}) => (
-              <a {...props} target="_blank" rel="noopener noreferrer" />
-            )
-          }}
-        >
-          {comment.text}
-        </ReactMarkdown>
-    </div>
+    {isEditing ? (
+      <div className='mt-2 grid w-full gap-1.5'>
+        <Textarea 
+          value={editInput}
+          onChange={(e) => setEditInput(e.target.value)}
+          placeholder='Edit your comment...'
+          rows={3}
+        />
+        <div className='flex justify-end gap-2 mt-2'>
+          <Button variant='subtle' onClick={() => {
+            setIsEditing(false)
+            setEditInput(comment.text)
+          }}>Cancel</Button>
+          <Button 
+            isLoading={isEditLoading} 
+            disabled={editInput.length === 0 || editInput === comment.text} 
+            onClick={() => editComment({ commentId: comment.id, text: editInput })}
+          >
+            Save
+          </Button>
+        </div>
+      </div>
+    ) : (
+      <div className='text-sm text-zinc-900 mt-2 prose prose-sm max-w-none'>
+          <ReactMarkdown 
+            remarkPlugins={[remarkGfm]}
+            components={{
+              a: ({node: _node, ...props}) => (
+                <a {...props} target="_blank" rel="noopener noreferrer" />
+              )
+            }}
+          >
+            {comment.text}
+          </ReactMarkdown>
+      </div>
+    )}
 
     <div className='flex gap-2 items-center flex-wrap'>
         <CommentVotes commentId={comment.id} initialVotesAmt={votesAmt} initialVote={currentVote} />

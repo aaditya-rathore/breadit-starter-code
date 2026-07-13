@@ -27,10 +27,10 @@ const CommentsSection  = async({postId}: CommentsSectionProps) => {
             }
         }
     })
+
+
   return( <section className='mt-8 flex w-full min-w-0 flex-col gap-y-4'>
     <hr className='w-full h-px my-6'/>
-
-    <CreateComment postId={postId}/>
 
     <div className='flex w-full min-w-0 flex-col gap-y-6 mt-4'>
        {comments.filter((comment)=> !comment.replyToId).map((topLevelComment)=>{
@@ -82,6 +82,10 @@ const CommentsSection  = async({postId}: CommentsSectionProps) => {
            </div>
            )
        })} 
+    </div>
+    
+    <div className='mt-4'>
+      <CreateComment postId={postId}/>
     </div>
   </section>
   )

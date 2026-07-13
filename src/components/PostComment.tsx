@@ -86,7 +86,16 @@ const PostComment: FC<PostCommentProps> = ({comment, votesAmt, currentVote, post
     </div>
 
     <div className='text-sm text-zinc-900 mt-2 prose prose-sm max-w-none'>
-        <ReactMarkdown remarkPlugins={[remarkGfm]}>{comment.text}</ReactMarkdown>
+        <ReactMarkdown 
+          remarkPlugins={[remarkGfm]}
+          components={{
+            a: ({node: _node, ...props}) => (
+              <a {...props} target="_blank" rel="noopener noreferrer" />
+            )
+          }}
+        >
+          {comment.text}
+        </ReactMarkdown>
     </div>
 
     <div className='flex gap-2 items-center flex-wrap'>

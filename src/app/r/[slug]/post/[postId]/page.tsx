@@ -99,7 +99,7 @@ const page=async ({params}: PageProps) => {
           }/>
         </article>
 
-        <div className='bg-white p-4 sm:p-6 rounded-sm'>
+        <div className='flex flex-col gap-y-4'>
           <Suspense fallback={
             <Loader2 className='h-5 w-5 animate-spin text-zinc-500'/>
           }>

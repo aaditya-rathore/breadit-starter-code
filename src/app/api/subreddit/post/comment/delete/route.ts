@@ -3,7 +3,7 @@ import { db } from "@/lib/db";
 import { CommentDeleteValidator } from "@/lib/validators/comment";
 import { z } from "zod";
 
-export async function DELETE(req: Request) {
+export async function POST(req: Request) {
     try {
         const body = await req.json()
         const { commentId } = CommentDeleteValidator.parse(body)
@@ -14,7 +14,8 @@ export async function DELETE(req: Request) {
         }
 
         const comment = await db.comment.findUnique({
-            where: { id: commentId }
+            where: { id: commentId },
+            include: { replies: true }
         })
 
         if (!comment) {
@@ -25,12 +26,22 @@ export async function DELETE(req: Request) {
             return new Response("Forbidden", { status: 403 })
         }
 
-        await db.comment.delete({
-            where: { id: commentId }
-        })
+        // If comment has replies, soft delete it (set text to [deleted]) to prevent breaking the tree
+        if (comment.replies.length > 0) {
+            await db.comment.update({
+                where: { id: commentId },
+                data: { text: "[deleted]" }
+            })
+        } else {
+            // Otherwise, hard delete it
+            await db.comment.delete({
+                where: { id: commentId }
+            })
+        }
 
         return new Response('Success')
     } catch (error) {
+        console.error("DELETE COMMENT ERROR:", error)
         if (error instanceof z.ZodError) {
             return new Response('Invalid request data passed', { status: 422 })
         }

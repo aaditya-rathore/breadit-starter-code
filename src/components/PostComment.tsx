@@ -96,7 +96,7 @@ const PostComment: FC<PostCommentProps> = ({comment, votesAmt, currentVote, post
     const { mutate: deleteComment, isLoading: isDeleteLoading } = useMutation({
         mutationFn: async ({ commentId }: CommentDeleteRequest) => {
             const payload: CommentDeleteRequest = { commentId }
-            const { data } = await axios.delete(`/api/subreddit/post/comment/delete`, { data: payload })
+            const { data } = await axios.post(`/api/subreddit/post/comment/delete`, payload)
             return data
         },
         onError: () => {
@@ -238,7 +238,7 @@ const PostComment: FC<PostCommentProps> = ({comment, votesAmt, currentVote, post
               PostComment({
                   postId,
                   text: input,
-                  replyToId: comment.replyToId ?? comment.id,
+                  replyToId: comment.id,
               })
             }}>
               Post</Button>
